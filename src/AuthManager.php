@@ -39,6 +39,7 @@ namespace SlimPower\AuthenticationManager;
 
 use SlimPower\Slim\Libs\Net;
 use SlimPower\Authentication\Interfaces\AuthenticatorInterface;
+use SlimPower\Authentication\Interfaces\ErrorInterface;
 use SlimPower\JwtAuthentication\JwtAuthentication;
 use SlimPower\JWT\JwtGenerator;
 use SlimPower\HttpBasicAuthentication\HttpBasicAuthentication;
@@ -90,6 +91,12 @@ abstract class AuthManager implements Interfaces\ManagerInterface {
     protected $authenticator = null;
 
     /**
+     * Error handler
+     * @var \SlimPower\Authentication\Interfaces\ErrorInterface 
+     */
+    protected $error = null;
+
+    /**
      * Hybrid paths with posibility to access with authentication or not.
      * @var array 
      */
@@ -99,12 +106,13 @@ abstract class AuthManager implements Interfaces\ManagerInterface {
      * Get AuthManager instance
      * @param \SlimPower\Slim\Slim $app SlimPower instance
      * @param \SlimPower\Authentication\Interfaces\AuthenticatorInterface $authenticator Authenticator
+     * @param \SlimPower\Authentication\Interfaces\ErrorInterface $error Error handler
      * @return \SlimPower\AuthenticationManager\AuthManager
      */
-    public static function getInstance(\SlimPower\Slim\Slim $app, AuthenticatorInterface $authenticator) {
+    public static function getInstance(\SlimPower\Slim\Slim $app, AuthenticatorInterface $authenticator, ErrorInterface $error) {
         if (!isset(self::$instance)) {
             $object = get_called_class();
-            self::$instance = new $object($app, $authenticator);
+            self::$instance = new $object($app, $authenticator, $error);
         }
 
         return self::$instance;
@@ -113,12 +121,14 @@ abstract class AuthManager implements Interfaces\ManagerInterface {
     /**
      * Constructor
      * @param \SlimPower\Slim\Slim $app SlimPower instance
-     * @param \SlimPower\Authentication\Interfaces\AuthenticatorInterface $authenticator Authenticator
+     * @param AuthenticatorInterface $authenticator Authenticator handler
+     * @param ErrorInterface $error Error handler
      */
-    protected function __construct(\SlimPower\Slim\Slim $app, AuthenticatorInterface $authenticator) {
-        $this->setApp($app);
+    protected function __construct(\SlimPower\Slim\Slim $app, AuthenticatorInterface $authenticator, ErrorInterface $error) {
+        $this->app = $app;
         $this->setAppSecure();
-        $this->setAuthenticator($authenticator);
+        $this->authenticator = $authenticator;
+        $this->error = $error;
         $this->buildTokenRelaxed();
         $this->buildInsecurePaths();
 
@@ -127,18 +137,6 @@ abstract class AuthManager implements Interfaces\ManagerInterface {
         $app->container->singleton('authManager', function () use ($app, $authenticator, $class) {
             return $class::getInstance($app, $authenticator);
         });
-    }
-
-    private function setApp(\SlimPower\Slim\Slim $app) {
-        $this->app = $app;
-    }
-
-    /**
-     * Set Authenticator
-     * @param \SlimPower\Authentication\Interfaces\AuthenticatorInterface $authenticator Authenticator
-     */
-    private function setAuthenticator(AuthenticatorInterface $authenticator) {
-        $this->authenticator = $authenticator;
     }
 
     /**
