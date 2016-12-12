@@ -45,8 +45,9 @@ interface ManagerInterface {
      * Get instance
      * @param \SlimPower\Slim\Slim $app SlimPower Instance
      * @param \SlimPower\Authentication\Interfaces\AuthenticatorInterface $authenticator Authenticator
+     * @param \SlimPower\Authentication\Interfaces\ErrorInterface $error Error handler
      */
-    public static function getInstance(\SlimPower\Slim\Slim $app, \SlimPower\Authentication\Interfaces\AuthenticatorInterface $authenticator);
+    public static function getInstance(\SlimPower\Slim\Slim $app, \SlimPower\Authentication\Interfaces\AuthenticatorInterface $authenticator, \SlimPower\Authentication\Interfaces\ErrorInterface $error);
 
     public function getAuthorization();
 
