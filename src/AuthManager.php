@@ -388,7 +388,5 @@ abstract class AuthManager implements Interfaces\ManagerInterface {
      */
     abstract protected function login();
 
-    abstract protected function sendErrorResponse(\SlimPower\Authentication\Error $error);
-
     abstract protected function sendCredential($token);
 }
