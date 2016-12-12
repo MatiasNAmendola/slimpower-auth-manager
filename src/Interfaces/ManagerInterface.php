@@ -68,5 +68,5 @@ interface ManagerInterface {
 
     public function getTokenValidity();
 
-    public function generateToken(array $data = array());
+    public function generateToken();
 }
