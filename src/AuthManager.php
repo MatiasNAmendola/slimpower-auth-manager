@@ -273,14 +273,6 @@ abstract class AuthManager implements Interfaces\ManagerInterface {
         $this->addCustomAuthentication();
     }
 
-    private function getErrorHandler() {
-        $error = function (\SlimPower\Authentication\Error $error) {
-            $this->sendErrorResponse($error);
-        };
-
-        return $error;
-    }
-
     private function getHttpBasicAuthenticationConfig() {
         $config = array(
             "path" => "/token",
@@ -291,7 +283,7 @@ abstract class AuthManager implements Interfaces\ManagerInterface {
             //      "admin" => "demo",
             //),
             "environment" => "REDIRECT_HTTP_AUTHORIZATION",
-            "error" => $this->getErrorHandler(),
+            "error" => $this->error,
             "authenticator" => $this->authenticator
         );
 
@@ -338,7 +330,7 @@ abstract class AuthManager implements Interfaces\ManagerInterface {
             ),
             "relaxed" => $this->tokenRelaxed,
             "callback" => $callback,
-            "error" => $this->getErrorHandler(),
+            "error" => $this->error,
             "authenticator" => $this->authenticator
         );
 
