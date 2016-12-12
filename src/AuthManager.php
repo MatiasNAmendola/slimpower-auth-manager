@@ -306,11 +306,9 @@ abstract class AuthManager implements Interfaces\ManagerInterface {
     private function addHttpBasicAuthentication() {
         $config = $this->getHttpBasicAuthenticationConfig();
 
-        $app = $this->getApp();
+        $this->app->add(new HttpBasicAuthentication($config));
 
-        $app->add(new HttpBasicAuthentication($config));
-
-        $app->get('/token(/)', function () use ($app) {
+        $this->app->get('/token(/)', function () use ($app) {
             /* Everything ok, generate token! */
             $app->authManager->generateToken();
         });
@@ -325,7 +323,7 @@ abstract class AuthManager implements Interfaces\ManagerInterface {
             "passthrough" => $this->insecurePaths
         );
 
-        $app = $this->getApp();
+        $app = $this->app;
 
         $callback = function ($options) use ($app) {
             $app->jwt = $options['decoded'];
@@ -352,7 +350,7 @@ abstract class AuthManager implements Interfaces\ManagerInterface {
      * Add custom authentication
      */
     private function addCustomAuthentication() {
-        $app = $this->getApp();
+        $app = $this->app;
 
         $app->get('/auth(/)', function () use ($app) {
             $app->authManager->getAuthorization();
