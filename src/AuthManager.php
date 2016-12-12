@@ -306,9 +306,10 @@ abstract class AuthManager implements Interfaces\ManagerInterface {
     private function addHttpBasicAuthentication() {
         $config = $this->getHttpBasicAuthenticationConfig();
 
-        $this->app->add(new HttpBasicAuthentication($config));
+        $app = $this->app;
+        $app->add(new HttpBasicAuthentication($config));
 
-        $this->app->get('/token(/)', function () use ($app) {
+        $app->get('/token(/)', function () use ($app) {
             /* Everything ok, generate token! */
             $app->authManager->generateToken();
         });
