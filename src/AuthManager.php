@@ -134,8 +134,8 @@ abstract class AuthManager implements Interfaces\ManagerInterface {
 
         $class = get_class($this); //get_called_class();     
 
-        $app->container->singleton('authManager', function () use ($app, $authenticator, $class) {
-            return $class::getInstance($app, $authenticator);
+        $app->container->singleton('authManager', function () use ($app, $authenticator, $error, $class) {
+            return $class::getInstance($app, $authenticator, $error);
         });
     }
 
