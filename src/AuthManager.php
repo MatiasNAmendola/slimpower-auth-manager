@@ -359,13 +359,13 @@ abstract class AuthManager implements Interfaces\ManagerInterface {
         $error->setDescription("Incorrect User.");
 
         if (!$loginData) {
-            $this->error->sendErrorResponse($error);
+            $this->error->__invoke($error);
             return;
         }
 
         if (!$this->authenticator->__invoke($loginData)) {
             $error = $this->authenticator->getError();
-            $this->error->sendErrorResponse($error);
+            $this->error->__invoke($error);
         } else {
             /* Everything ok, generate token! */
             $this->generateToken();
