@@ -103,7 +103,7 @@ abstract class AuthManager implements Interfaces\ManagerInterface {
      */
     public static function getInstance(\SlimPower\Slim\Slim $app, AuthenticatorInterface $authenticator) {
         if (!isset(self::$instance)) {
-            $object = __CLASS__;
+            $object = get_class($this);
             self::$instance = new $object($app, $authenticator);
         }
 
