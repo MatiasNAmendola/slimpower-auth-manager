@@ -85,10 +85,16 @@ abstract class AuthManager implements Interfaces\ManagerInterface {
     protected $insecurePaths = array();
 
     /**
-     * Authenticator
+     * Authenticator handler for Login
      * @var \SlimPower\Authentication\Interfaces\AuthenticatorInterface
      */
-    protected $authenticator = null;
+    protected $authLogin = null;
+    
+    /**
+     * Authenticator handler for Token
+     * @var \SlimPower\Authentication\Interfaces\AuthenticatorInterface
+     */
+    protected $authToken = null;
 
     /**
      * Error handler
@@ -105,14 +111,15 @@ abstract class AuthManager implements Interfaces\ManagerInterface {
     /**
      * Get AuthManager instance
      * @param \SlimPower\Slim\Slim $app SlimPower instance
-     * @param \SlimPower\Authentication\Interfaces\AuthenticatorInterface $authenticator Authenticator
+     * @param \SlimPower\Authentication\Interfaces\AuthenticatorInterface $authLogin Authenticator handler for Login
+     * @param \SlimPower\Authentication\Interfaces\AuthenticatorInterface $authToken Authenticator handler for Token
      * @param \SlimPower\Authentication\Interfaces\ErrorInterface $error Error handler
      * @return \SlimPower\AuthenticationManager\AuthManager
      */
-    public static function getInstance(\SlimPower\Slim\Slim $app, AuthenticatorInterface $authenticator, ErrorInterface $error) {
+    public static function getInstance(\SlimPower\Slim\Slim $app, AuthenticatorInterface $authLogin, AuthenticatorInterface $authToken, ErrorInterface $error) {
         if (!isset(self::$instance)) {
             $object = get_called_class();
-            self::$instance = new $object($app, $authenticator, $error);
+            self::$instance = new $object($app, $authLogin, $authToken, $error);
         }
 
         return self::$instance;
@@ -121,21 +128,23 @@ abstract class AuthManager implements Interfaces\ManagerInterface {
     /**
      * Constructor
      * @param \SlimPower\Slim\Slim $app SlimPower instance
-     * @param AuthenticatorInterface $authenticator Authenticator handler
+     * @param \SlimPower\Authentication\Interfaces\AuthenticatorInterface $authLogin Authenticator handler for login
+     * @param \SlimPower\Authentication\Interfaces\AuthenticatorInterface $authToken Authenticator handler for Token
      * @param ErrorInterface $error Error handler
      */
-    protected function __construct(\SlimPower\Slim\Slim $app, AuthenticatorInterface $authenticator, ErrorInterface $error) {
+    protected function __construct(\SlimPower\Slim\Slim $app, AuthenticatorInterface $authLogin, AuthenticatorInterface $authToken, ErrorInterface $error) {
         $this->app = $app;
         $this->setAppSecure();
-        $this->authenticator = $authenticator;
+        $this->authLogin = $authLogin;
+        $this->authToken = $authToken;
         $this->error = $error;
         $this->buildTokenRelaxed();
         $this->buildInsecurePaths();
 
         $class = get_class($this); //get_called_class();     
 
-        $app->container->singleton('authManager', function () use ($app, $authenticator, $error, $class) {
-            return $class::getInstance($app, $authenticator, $error);
+        $app->container->singleton('authManager', function () use ($app, $authLogin, $authToken, $error, $class) {
+            return $class::getInstance($app, $authLogin, $authToken, $error);
         });
     }
 
@@ -284,7 +293,7 @@ abstract class AuthManager implements Interfaces\ManagerInterface {
             //),
             "environment" => "REDIRECT_HTTP_AUTHORIZATION",
             "error" => $this->error,
-            "authenticator" => $this->authenticator
+            "authenticator" => $this->authLogin
         );
 
         return $config;
@@ -331,7 +340,7 @@ abstract class AuthManager implements Interfaces\ManagerInterface {
             "relaxed" => $this->tokenRelaxed,
             "callback" => $callback,
             "error" => $this->error,
-            "authenticator" => $this->authenticator
+            "authenticator" => $this->authToken
         );
 
         $app->add(new JwtAuthentication($config));
@@ -363,8 +372,8 @@ abstract class AuthManager implements Interfaces\ManagerInterface {
             return;
         }
 
-        if (!$this->authenticator->__invoke($loginData)) {
-            $error = $this->authenticator->getError();
+        if (!$this->authLogin->__invoke($loginData)) {
+            $error = $this->authLogin->getError();
             $this->error->__invoke($error);
         } else {
             /* Everything ok, generate token! */
