@@ -326,7 +326,7 @@ abstract class AuthManager implements Interfaces\ManagerInterface {
             "secure" => $this->appSecure,
             "warningPaths" => $this->warningPaths,
             "rules" => array(
-                new \SlimPower\Authentication\RequestPathRule($cPathRule)
+                new \SlimPower\Authentication\Callables\RequestPathRule($cPathRule)
             ),
             "relaxed" => $this->tokenRelaxed,
             "callback" => $callback,
