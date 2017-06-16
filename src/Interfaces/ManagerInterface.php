@@ -38,7 +38,8 @@
 namespace SlimPower\AuthenticationManager\Interfaces;
 
 use SlimPower\Slim\Slim;
-use SlimPower\Authentication\Interfaces\AuthenticatorInterface;
+use SlimPower\Authentication\Interfaces\LoginAuthenticatorInterface;
+use SlimPower\Authentication\Interfaces\TokenAuthenticatorInterface;
 use SlimPower\Authentication\Interfaces\ErrorInterface;
 
 interface ManagerInterface {
@@ -48,11 +49,11 @@ interface ManagerInterface {
     /**
      * Get instance
      * @param \SlimPower\Slim\Slim $app SlimPower Instance
-     * @param \SlimPower\Authentication\Interfaces\AuthenticatorInterface $authLogin Authenticator handler for Login
-     * @param \SlimPower\Authentication\Interfaces\AuthenticatorInterface $authToken Authenticator handler for Token
+     * @param \SlimPower\Authentication\Interfaces\LoginAuthenticatorInterface $authLogin Authenticator handler for Login
+     * @param \SlimPower\Authentication\Interfaces\TokenAuthenticatorInterface $authToken Authenticator handler for Token
      * @param \SlimPower\Authentication\Interfaces\ErrorInterface $error Error handler
      */
-    public static function getInstance(Slim $app, AuthenticatorInterface $authLogin, AuthenticatorInterface $authToken, ErrorInterface $error);
+    public static function getInstance(Slim $app, LoginAuthenticatorInterface $authLogin, TokenAuthenticatorInterface $authToken, ErrorInterface $error);
 
     public function getAuthorization();
 
