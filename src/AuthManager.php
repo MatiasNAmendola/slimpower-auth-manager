@@ -391,12 +391,13 @@ abstract class AuthManager implements Interfaces\ManagerInterface {
     }
 
     public function generateToken() {
-        $data = $this->app->jwtdata;
+        $data = $this->app->userData;
         $jwtGenerator = new JwtGenerator($this->app);
         $jwtGenerator->setTokenSecret($this->tokenSecret);
         $jwtGenerator->setTokenValidity($this->tokenValidity);
         $token = $jwtGenerator->generateToken($data);
-        $this->app->jwtenc = $token;
+        /* Everything ok, add custom property! */
+    	$this->app->token = $token;
         $this->sendCredential($token);
     }
 
