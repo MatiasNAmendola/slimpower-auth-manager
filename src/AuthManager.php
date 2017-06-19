@@ -367,7 +367,7 @@ abstract class AuthManager implements Interfaces\ManagerInterface {
      * Get authorization
      */
     public function getAuthorization() {
-        $loginData = $this->login();
+        $loginData = $this->getLoginData();
 
         $error = new \SlimPower\Authentication\Error();
         $error->setCode(1);
@@ -397,7 +397,7 @@ abstract class AuthManager implements Interfaces\ManagerInterface {
         $jwtGenerator->setTokenValidity($this->tokenValidity);
         $token = $jwtGenerator->generateToken($data);
         /* Everything ok, add custom property! */
-    	$this->app->token = $token;
+        $this->app->token = $token;
         $this->sendCredential($token);
     }
 
@@ -405,7 +405,7 @@ abstract class AuthManager implements Interfaces\ManagerInterface {
      * Get login data
      * @return array Login data
      */
-    abstract protected function login();
+    abstract protected function getLoginData();
 
     abstract protected function sendCredential($token);
 }
